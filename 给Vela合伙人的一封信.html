@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vintage Letters Collection</title>
+    <!-- Special Elite for typewriter text, Great Vibes for handwriting, MedievalSharp for title -->
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Great+Vibes&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            /* Dark wood texture simulation */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                url('https://www.transparenttextures.com/patterns/wood-pattern.png'); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Special Elite', monospace;
+            overflow: hidden; /* Prevent scrolling when zooming in */
+        }
+
+        /* --- Desk View --- */
+        #desk-view {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column; /* Changed to column to stack title */
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            transform-origin: center;
+        }
+
+        .desk-title {
+            position: relative;
+            font-family: 'Great Vibes', cursive;
+            font-size: 72px; /* Increased size for cursive */
+            font-weight: normal; /* Cursive is naturally thick enough usually, bold makes it blobby */
+            
+            /* Wooden Board Styling */
+            background-color: #5d4037;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.05) 50px, rgba(0,0,0,0.05) 53px),
+                              repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.05) 50px, rgba(0,0,0,0.05) 53px);
+            padding: 15px 60px;
+            border: 4px solid #3e2723;
+            border-radius: 8px;
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.6), /* Drop shadow for the board */
+                inset 0 0 20px rgba(0,0,0,0.6); /* Inner shadow for depth */
+            
+            margin-bottom: 40px;
+            z-index: 20;
+            transform: translateY(-20px);
+
+            /* Gold Text Effect */
+            background: linear-gradient(to bottom, #cfc09f 20%, #ffecb3 40%, #c49a6c 60%, #8a6e45 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #c49a6c; /* Fallback */
+            
+            /* Embossed/Metallic Shadow */
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.8));
+        }
+
+        /* The Nails */
+        .desk-title::before,
+        .desk-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #90a4ae, #455a64);
+            box-shadow: 
+                0 1px 2px rgba(0,0,0,0.8), /* Drop shadow */
+                inset 0 0 2px rgba(0,0,0,0.5); /* Inner metallic feel */
+            transform: translateY(-50%);
+        }
+
+        .desk-title::before {
+            left: 15px;
+        }
+
+        .desk-title::after {
+            right: 15px;
+        }
+
+        .footer-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 42px; /* Increased size */
+            margin-top: 60px;
+            letter-spacing: 1px; /* Reduced spacing for connected script */
+            font-weight: normal;
+            
+            /* Gold Gradient Text (Matching Title but subtler) */
+            background: linear-gradient(to bottom, #cfc09f 20%, #e6cba5 50%, #c49a6c 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #e6cba5;
+            
+            /* Glow/Shadow */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+            opacity: 0.9;
+            animation: pulse-gold 3s infinite alternate;
+        }
+
+        @keyframes pulse-gold {
+            0% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) brightness(1); }
+            100% { filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4)) brightness(1.2); }
+        }
+
+        #desk-view.hidden {
+            transform: scale(2);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .envelopes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
+            gap: 60px;
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        /* Adjust for 5 items centered: 3 top, 2 bottom */
+        .envelopes-grid .envelope-item:nth-child(4) {
+            grid-column: 1 / span 1;
+            transform: translateX(50%); /* Shift visually if needed, but flex/grid combo is better. Let's stick to simple grid and random rotation */
+        }
+        /* Actually, let's just use flex wrap for a more natural scattered look */
+        .envelopes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 50px;
+            max-width: 900px;
+        }
+
+        .envelope-item {
+            position: relative;
+            width: 220px;
+            height: 140px;
+            /* 3D Paper Gradient */
+            background: linear-gradient(135deg, #f3dcb8 0%, #e6cba5 50%, #dcb888 100%);
+            /* Deep, layered shadow for lifting off the desk */
+            box-shadow: 
+                0 1px 1px rgba(0,0,0,0.5), 
+                0 4px 8px rgba(0,0,0,0.3),
+                0 15px 30px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 2px;
+            overflow: visible; /* Needed for shadows sticking out */
+        }
+
+        /* Top Flap (The one that opens) */
+        .envelope-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+            /* Gradient-like color for top flap */
+            border-top: 80px solid #eecfa1; 
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.4s;
+            /* The Key to 3D: Drop shadow on the flap itself */
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Bottom/Side Pockets */
+        .envelope-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            /* Create 3 triangles: Left, Right, Bottom */
+            border-left: 110px solid #e6cba5;   /* Side (Medium) */
+            border-right: 110px solid #cfaa76;  /* Side (Darker/Shadowed) */
+            border-bottom: 75px solid #deb887;  /* Bottom Flap (Distinct) */
+            border-top: 65px solid transparent;
+            width: 0;
+            height: 0;
+            z-index: 3;
+            /* Subtle shadow for the pocket structure */
+            filter: drop-shadow(0 -2px 3px rgba(0,0,0,0.1));
+        }
+
+        .envelope-item:hover {
+            transform: scale(1.05) translateY(-10px) rotateX(10deg);
+            box-shadow: 
+                0 5px 10px rgba(0,0,0,0.4),
+                0 20px 40px rgba(0,0,0,0.4);
+            z-index: 100; /* Ensure it floats above others */
+        }
+
+        .envelope-item:hover::before {
+            transform: rotateX(20deg); /* Slight flap lift */
+        }
+
+        /* Name on envelope */
+        .recipient-name {
+            position: absolute;
+            z-index: 5;
+            font-family: 'Great Vibes', cursive;
+            font-size: 24px;
+            color: #4a3b2a;
+            transform: rotate(-5deg);
+            pointer-events: none; /* Let clicks pass through */
+            bottom: 15px;
+            text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+        }
+        
+        /* Wax Seal Small */
+        .wax-seal-small {
+            position: absolute;
+            top: 55px; /* Adjusted slightly up */
+            z-index: 6;
+            width: 36px;
+            height: 36px;
+            background: #8e1a1a;
+            background: radial-gradient(circle at 30% 30%, #a62c2c, #8e1a1a);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.2);
+            border: 2px solid #6d1212;
+            
+            /* Text Centering & Styling */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #5a0b0b; /* Dark red/brown for engraved look */
+            font-family: 'Great Vibes', cursive;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.15); /* Subtle highlight to look impressed */
+            letter-spacing: 1px;
+        }
+        
+        /* Inner ring for more detail */
+        .wax-seal-small::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px dashed #6d1212;
+            border-radius: 50%;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Random rotations for scattered look */
+        .envelope-item:nth-child(1) { transform: rotate(-3deg); }
+        .envelope-item:nth-child(2) { transform: rotate(2deg); }
+        .envelope-item:nth-child(3) { transform: rotate(-5deg); }
+        .envelope-item:nth-child(4) { transform: rotate(4deg); }
+        .envelope-item:nth-child(5) { transform: rotate(-2deg); }
+
+        .envelope-item:nth-child(1):hover { transform: scale(1.05) rotate(-3deg) translateY(-5px); }
+        .envelope-item:nth-child(2):hover { transform: scale(1.05) rotate(2deg) translateY(-5px); }
+        .envelope-item:nth-child(3):hover { transform: scale(1.05) rotate(-5deg) translateY(-5px); }
+        .envelope-item:nth-child(4):hover { transform: scale(1.05) rotate(4deg) translateY(-5px); }
+        .envelope-item:nth-child(5):hover { transform: scale(1.05) rotate(-2deg) translateY(-5px); }
+
+
+        /* --- Reading View --- */
+        #reading-view {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* Initially disabled */
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+        }
+
+        #reading-view.active {
+            pointer-events: all;
+            opacity: 1;
+        }
+
+        .paper-container {
+            position: relative;
+            width: 80%;
+            max-width: 700px;
+            min-height: 500px;
+            background-color: #fdf6e3;
+            background-image: 
+                linear-gradient(90deg, transparent 95%, rgba(0,0,0,0.02) 95%),
+                linear-gradient(transparent 95%, rgba(0,0,0,0.02) 95%);
+            background-size: 20px 20px;
+            padding: 60px;
+            box-shadow: 
+                0 1px 1px rgba(0,0,0,0.15), 
+                0 10px 0 -5px #eee, 
+                0 10px 1px -4px rgba(0,0,0,0.15), 
+                0 20px 0 -10px #eee, 
+                0 20px 1px -9px rgba(0,0,0,0.15),
+                0 30px 30px rgba(0,0,0,0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+        }
+
+        #reading-view.active .paper-container {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .paper-clip {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 40px;
+            background: #444;
+            border-radius: 5px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .paper-clip::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 20px;
+            background: #222;
+            border-radius: 3px;
+        }
+
+        #typewriter-text {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 20px;
+            background-color: #333;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        .cursor.typing {
+            animation: none;
+            opacity: 1;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .back-btn {
+            position: absolute;
+            top: -60px;
+            left: 0;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #e6cba5;
+            cursor: pointer;
+            font-family: 'Special Elite', monospace;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* Stamp */
+        .stamp {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 100px;
+            height: 100px;
+            border: 3px solid #a94442;
+            border-radius: 50%;
+            color: #a94442;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        .stamp.visible {
+            opacity: 0.7;
+        }
+
+        .stamp-inner {
+            text-align: center;
+            border: 1px solid #a94442;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Desk View with 5 Envelopes -->
+    <div id="desk-view">
+        <div class="desk-title">Vela Mailbox</div>
+        <div class="envelopes-container">
+            <div class="envelope-item" onclick="openLetter(0)">
+                <div class="wax-seal-small">Vela</div>
+                <div class="recipient-name">To Jack</div>
+            </div>
+            <div class="envelope-item" onclick="openLetter(1)">
+                <div class="wax-seal-small">Vela</div>
+                <div class="recipient-name">To Lily</div>
+            </div>
+            <div class="envelope-item" onclick="openLetter(2)">
+                <div class="wax-seal-small">Vela</div>
+                <div class="recipient-name">To Phoebe</div>
+            </div>
+            <div class="envelope-item" onclick="openLetter(3)">
+                <div class="wax-seal-small">Vela</div>
+                <div class="recipient-name">To Rey</div>
+            </div>
+            <div class="envelope-item" onclick="openLetter(4)">
+                <div class="wax-seal-small">Vela</div>
+                <div class="recipient-name">To Neville</div>
+            </div>
+        </div>
+        <div class="footer-text">2026 Vela Rich!</div>
+    </div>
+
+    <!-- Reading View -->
+    <div id="reading-view">
+        <div class="paper-container">
+            <button class="back-btn" onclick="closeLetter()">← Back to Desk</button>
+            <div class="paper-clip"></div>
+            <div id="typewriter-text"></div>
+            
+            <div class="stamp" id="stamp">
+                <div class="stamp-inner">
+                    <span>RECEIVED</span>
+                    <span style="font-size: 10px; margin-top: 5px;">Vela POST</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Letter Contents
+        const letters = [
+            `致 Vela Studios 的首席信仰官、人形自走 BD 机——Jack：
+展信佳（希望你此刻没有在上海的地铁里坐反方向）。
+这一年，你向我们展示了什么是“顶级的商业嗅觉”。当我们坚守大后方时，你已经看到了“BD as a Service”的生态蓝图。你的眼睛仿佛装了“商机雷达”，能从一次普通的校友聚餐中嗅出百万订单的味道，能从枯燥的政府文件中读出的需求和机会。
+你更是一位“资源炼金术士”。你游刃有余地穿梭在苏州高新区的政府大院、跨国名企和初创公司之间，见人说人话，见鬼……哦不，见客户说“专业话”。你用极高的情商和政治智慧，把“青出于蓝”从一个概念变成了官方认证的“引才金字招牌”，把 Vela 从一个设计工作室拔高成了“中国版 YC”雏形。你证明了：在这个巨大的草台班子里，你就是那个能搭台唱大戏的人。
+当然，上帝是公平的。他给了你敏锐的商业头脑和长袖善舞的社交能力，便拿走了你的方向感。看着你在商业版图上纵横捭阖，却在地铁二号线上迷失方向；看着你谈着几百万的大单，却为了几十块的停车发票精打细算，这种反差萌，确实是我们团队的快乐源泉。
+2026 寄语： 愿你继续用你的“商业魔法”为 Vela 和 FlashOffer 引入更多的“泼天富贵”。少坐错车，多签大单，带我们早日实现躺着赚钱的 Vela Rich！
+—— 紧跟杰克船长的 Vela 全体合伙人`,
+            
+            `致 Vela Studios 的 LinkedIn 顶流、严选讲师——Lily：
+展信佳（希望你此刻没有在为了改 Deck 而烧焦红烧肉）。
+这一年，你成功完成了从 Design Principal 到 “岳老师” 的华丽转身。在 LinkedIn 上，你是动辄 18 万浏览量 的 KOL；在苏州党校，你是给局长、处长们科普 AI 的权威专家。你用实力证明了：设计师不仅能画图，还能用 AI 洞察 和 逻辑框架 把那些不懂装懂的甲方教育得心服口服。
+你是团队里最 “人间清醒” 的人。面对那些审美降级、流程混乱的“草台班子”客户，你主张 “设计界的 Omakase”（厨师发办）——要么听我的，要么别找我。虽然现实往往是你要一边在群里暴躁输出“这人懂不懂啊”，一边还要复盘下次哪里可以做得更好。
+当然，我们永远不会忘记那锅为了赶 PPT 而牺牲的 红烧肉。那不仅是食材的损失，更是对 Vela 客户的一份献祭。
+2026 寄语： 愿新的一年，你能遇到更多懂行的“Omakase”客户，少一点无效的修改，多一点 “用钱封口” 的爽快。希望你的 LinkedIn 粉丝早日破万，蛋饺（猫）健康成长，以及——再也不要把红烧肉烧焦了！
+—— 仰望岳老师的 Vela 全体合伙人`,
+
+            `致 Vela Studios 的视觉灵魂、CapyVela 之母、拥有“Final Say”的女王——Phoebe：
+展信佳（希望你此刻正在享受西双版纳的阳光）。
+这一年，你用一次“美丽的笔误”奠定了你在 Vela 不可动摇的江湖地位。那句 “I say...”（本想打 I see）让 Sanjay 和印度开发团队瑟瑟发抖，从此确立了 “Phoebe has the final say” 的设计霸权。你用实力证明了：在审美这件事上，你是唯一的真理。
+你也是团队里的 “效率狂魔”。Jack 说“1 个 Phoebe 抵得上 5 个 Natali”，这绝对是保守估计。面对 Rajeev 对紫色的无限纠结、政府领导“五彩斑斓的黑”的离谱要求，以及那群需要你“喂饭式”指导的印度开发，你虽然在群里疯狂输出“暴躁表情包”，但在客户面前依然保持了 “职业假笑” 和 “降维打击” 般的交付质量。
+感谢你创造了 “卡皮微辣” (CapyVela)，让我们的情绪有了最佳的嘴替；也感谢你作为 “我是菲比菜” 的主理人，用美食和精打细算的报销表格温暖了大家的胃和钱包。你一边在空中蹦极、内蒙骑马，一边还能产出高质量 Design System 的“松弛感”，是我们最羡慕的境界。
+2026 寄语： 愿新的一年，甲方的审美都在线，开发的还原度都满分。希望再也没有人敢对你的设计说“Play around”，而是直接跪下说“Approved”！愿你的 “Final Say” 永远响亮！
+—— 瑟瑟发抖但深爱你的 Vela 全体合伙人`,
+
+            `致 Vela Studios 的首席回款官、蚂蚁驯兽师、我们的“小财神”——Rey：
+展信佳（希望你此刻和菲比一起正在享受西双版纳的阳光）。
+这一年，你是 Vela 情绪最稳定的“定海神针”。面对蚂蚁国际 (Antom) 那边反复无常的需求、Zach 这种“既要又要”的甲方，以及繁琐到令人发指的采购付款流程，你展现出了惊人的耐心和催款能力。你不仅成功建立了一套“实习生生产 + 专家审核”的高毛利流水线，更是在无数个深夜里，把那些枯燥的数据变成了客户满意的报告。
+作为公司的 CFO，你是我们最想见到的人。因为每当你在群里发声，通常只意味着两件事：要么是“钱到账了！”，要么是“发钱了！”。你和 Vice CFO 从零搭建了 Vela 的财务体系，精打细算地研究各种税务政策和报销流程，为我们的业务提供了坚实的财务支持。
+2026 寄语： 愿新的一年，甲方的回款像你的语速一样快，甲方的要求像你的脾气一样好哄。希望你管理的“小金库”早日变成“大金矿”，让我们一起在上海的豪宅里撸鹦鹉！
+—— 坐等 Rey 发钱的 Vela 全体合伙人`,
+
+            `致 Vela Studios 的 AI 炼丹师、效率成精的“小摩托”——Sam：
+展信佳（希望你此刻没有在 Vibe Coding 的世界中迷失）。
+这一年，你是 Vela 乃至全宇宙最快的 “小摩托”。当 Jack 还在画饼，Lily 还在构思，Phoebe 还在纠结像素时，你已经用 AI 把文章写完、把视频剪好、把公众号排版发出了。你是团队的 “技术外挂”，左手 OpenAI 右手 Gemini，硬是把 Vela 包装成了“国际顶流 AI 机构”。如果没有你，那些“高大上”理论大概只能停留在口头上，是你开始耕耘一篇篇文章，让客户相信了我们的“遥遥领先”。
+作为 北京分公司 的封疆大吏，你一个人活成了一支队伍。从跑工商局注册公司，到搞定各种繁琐的合同流程，再到运营 LinkedIn 和小红书，你用惊人的执行力证明了：只要 Prompt 写得好，没有干不完的活。
+当然，今年也是你人生的高光时刻。在忙碌的创业间隙，你顺手把 婚 给结了（还结了两场！），并且依然保持着高效产出。这种 Work-Life-Integration 的境界，吾辈楷模。
+2026 寄语： 愿新的一年，AI 工具越来越聪明（不再生成诡异的手指和鼻子），你的“小摩托”马力全开，带领 Vela 的流量冲出地球。祝早日实现 “靠 AI 躺着赚钱” 的终极梦想！
+—— 坐等被你的 AI 养活的 Vela 全体合伙人`
+        ];
+
+        const deskView = document.getElementById('desk-view');
+        const readingView = document.getElementById('reading-view');
+        const textElement = document.getElementById('typewriter-text');
+        const stamp = document.getElementById('stamp');
+        
+        let typingTimeout;
+        let isTyping = false;
+
+        function openLetter(index) {
+            // Transition views
+            deskView.classList.add('hidden');
+            readingView.classList.add('active');
+            
+            // Start typing logic
+            const content = letters[index];
+            startTyping(content);
+        }
+
+        function closeLetter() {
+            // Transition views back
+            readingView.classList.remove('active');
+            deskView.classList.remove('hidden');
+            
+            // Reset typing
+            clearTimeout(typingTimeout);
+            isTyping = false;
+            textElement.innerHTML = '';
+            stamp.classList.remove('visible');
+        }
+
+        function startTyping(content) {
+            textElement.innerHTML = '<span class="cursor typing"></span>'; 
+            isTyping = true;
+            stamp.classList.remove('visible');
+            
+            let charIndex = 0;
+
+            function typeNextChar() {
+                if (!isTyping) return; // Stop if closed
+
+                if (charIndex < content.length) {
+                    const char = content.charAt(charIndex);
+                    const currentHtml = textElement.innerHTML;
+                    
+                    // Remove cursor temporarily
+                    const textWithoutCursor = currentHtml.replace('<span class="cursor typing"></span>', '');
+                    
+                    // Add new char and put cursor back
+                    textElement.innerHTML = textWithoutCursor + char + '<span class="cursor typing"></span>';
+                    
+                    charIndex++;
+                    
+                    // Randomize typing speed
+                    const randomDelay = Math.random() * 50 + 30; // Faster speed for better UX
+                    
+                    // Pause for punctuation
+                    let pause = 0;
+                    if (char === '.' || char === ',' || char === '\n') {
+                        pause = 300;
+                    }
+
+                    typingTimeout = setTimeout(typeNextChar, randomDelay + pause);
+                } else {
+                    // Finished
+                    const currentHtml = textElement.innerHTML;
+                    textElement.innerHTML = currentHtml.replace('cursor typing', 'cursor');
+                    isTyping = false;
+                    
+                    // Show stamp
+                    setTimeout(() => {
+                        stamp.classList.add('visible');
+                    }, 800);
+                }
+            }
+
+            // Start after a short delay for the view transition
+            setTimeout(typeNextChar, 1000);
+        }
+    </script>
+</body>
+</html>
